@@ -19,8 +19,8 @@ public class FollowRepositoryImpl extends AbstractRepository<Follow> implements 
     }
 
     @Override
-    public void save(Follow entity) {
-        mongoTemplate.save(entity, FOLLOW_COLLECTION);
+    public Follow save(Follow entity) {
+        return mongoTemplate.save(entity, FOLLOW_COLLECTION);
     }
 
     @Override

@@ -13,7 +13,7 @@ public class ResourceRepositoryImpl extends AbstractRepository<Resource> impleme
     }
 
     @Override
-    public void save(Resource entity) {
-        mongoTemplate.save(entity, RESOURCE_COLLECTION);
+    public Resource save(Resource entity) {
+        return mongoTemplate.save(entity, RESOURCE_COLLECTION);
     }
 }

@@ -16,7 +16,7 @@ public class RoleRepositoryImpl extends AbstractRepository<Role> implements Role
     }
 
     @Override
-    public void save(Role entity) {
-        mongoTemplate.save(entity, ROLE_COLLECTION);
+    public Role save(Role entity) {
+        return mongoTemplate.save(entity, ROLE_COLLECTION);
     }
 }
