@@ -45,9 +45,10 @@ public class PostServiceImpl implements PostService {
     @Override
     public void createPost(CreatePostRequest postRequest) {
         Post post = castCreatePostRequestToPost(postRequest);
+        Post pstSaved = postRepository.save(post);
+        System.out.println(pstSaved);
         assert post != null;
-        MAP_ALL_POSTS.put(post.getId().toString(), post);
-        postRepository.save(post);
+        MAP_ALL_POSTS.put(pstSaved.getId().toString(), post);
 
         if (post.getStatus() >= Constant.POST.FRIEND_STATUS) {
             User user = userRepository.findById(post.getUserID(), User.class);
@@ -152,7 +153,8 @@ public class PostServiceImpl implements PostService {
         Query query = new Query(Criteria.where(Post._ID).is(ObjPostId));
         Update update = new Update().set(Post.IS_DELETE, true)
                 .set(Post.LAST_MODIFIED_AT, Utils.convertDateToString(new Date()))
-                .set(Post.LAST_MODIFIED_BY, post.getUserID());
+                .set(Post.LAST_MODIFIED_BY, post.getUserID())
+                .set(Post.IS_DELETE, true);
 
         MAP_ALL_POSTS.remove(postId);
 
@@ -168,7 +170,8 @@ public class PostServiceImpl implements PostService {
             Query find = new Query().addCriteria(new Criteria(Post._ID).is(pst.getId()));
             Update delete = new Update().set(Post.IS_DELETE, true)
                     .set(Post.LAST_MODIFIED_AT, Utils.convertDateToString(new Date()))
-                    .set(Post.LAST_MODIFIED_BY, post.getUserID());
+                    .set(Post.LAST_MODIFIED_BY, post.getUserID())
+                    .set(Post.IS_DELETE, true);
             bulkOperations.updateOne(find, delete);
         }
         bulkOperations.execute();
@@ -213,7 +216,7 @@ public class PostServiceImpl implements PostService {
         User user = userRepository.findByUsername(username);
         MAP_ALL_POSTS.putAll(postRepository.getAllPublicPosts());
         List<Follow> listFriendIds = followRepository.getFollowByUserId(user.getId().toString());
-        List<String> listStringFriendIds = listFriendIds.stream().map(follow -> follow.getId().toString()).toList();
+        List<String> listStringFriendIds = listFriendIds.stream().map(follow -> follow.getUserId()).toList();
         List<Post> postOfFriends = postRepository.getAllPostOfFriends(listStringFriendIds);
         postOfFriends.forEach(post -> {
             MAP_ALL_POSTS.put(post.getUserID(), post);

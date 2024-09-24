@@ -1,8 +1,8 @@
 package com.socialNetwork.socialNetwork.repository.interfacePackage;
 
 import com.socialNetwork.socialNetwork.entities.React;
-import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import com.socialNetwork.socialNetwork.repository.Repository;
 
-public interface ReactRepository extends MongoRepository<React, ObjectId> {
+public interface ReactRepository extends Repository<React> {
+    React findByUserIdAndPostId(String userId, String postId);
 }

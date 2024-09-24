@@ -57,6 +57,6 @@ public class FollowServiceImpl implements FollowService {
     @Override
     public List<String> getFollowerByUserId(String userId) {
         List<Follow> followList = followRepository.getFollowerByUserId(userId);
-        return followList.stream().map(follow -> follow.getId().toString()).collect(Collectors.toList());
+        return followList.stream().map(Follow::getUserIdFollow).collect(Collectors.toList());
     }
 }

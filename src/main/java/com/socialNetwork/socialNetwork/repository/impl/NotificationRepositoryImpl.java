@@ -15,7 +15,7 @@ public class NotificationRepositoryImpl extends AbstractRepository<Notification>
     }
 
     @Override
-    public void save(Notification entity) {
-        mongoTemplate.save(entity, NOTIFICATION_COLLECTION);
+    public Notification save(Notification entity) {
+        return mongoTemplate.save(entity, NOTIFICATION_COLLECTION);
     }
 }

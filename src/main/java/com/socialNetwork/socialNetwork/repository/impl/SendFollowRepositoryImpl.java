@@ -16,7 +16,7 @@ public class SendFollowRepositoryImpl extends AbstractRepository<SendFollow> imp
     }
 
     @Override
-    public void save(SendFollow entity) {
-        mongoTemplate.save(entity, SEND_FOLLOW_REQUEST_COLLECTION);
+    public SendFollow save(SendFollow entity) {
+        return mongoTemplate.save(entity, SEND_FOLLOW_REQUEST_COLLECTION);
     }
 }

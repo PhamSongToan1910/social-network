@@ -2,6 +2,7 @@ package com.socialNetwork.socialNetwork.entities;
 
 import lombok.Data;
 import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.io.Serializable;
@@ -19,6 +20,7 @@ public class BaseEntity implements Serializable {
 
 
     @Field(_ID)
+    @Id
     private ObjectId id;
 
     @Field(CREATE_BY)

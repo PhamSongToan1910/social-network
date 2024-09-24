@@ -14,5 +14,5 @@ public interface Repository<E extends BaseEntity> {
     E findById(String id, Class<E> type);
     List<E> findByIds(List<String> ids, Class<E> type);
     List<E> findByIds(Set<String> ids, Class<E> type);
-    void save (E entity);
+    E save (E entity);
 }

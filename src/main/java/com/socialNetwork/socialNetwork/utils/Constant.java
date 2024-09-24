@@ -16,7 +16,7 @@ public class Constant {
     }
 
     public class SEND_REQUEST{
-        public static final int ACCEPT = 1;
+            public static final int ACCEPT = 1;
         public static final int PENDING = 0;
         public static final int DENY = -1;
     }
@@ -47,6 +47,22 @@ public class Constant {
 
     }
 
+    public class REACT {
+        public static final int LIKE = 1;
+        public static final int LOVE = 2;
+        public static final int CARE = 3;
+        public static final int WOW = 4;
+        public static final int HAHA = 5;
+        public static final int SAD = 6;
+        public static final int ANGRY = 7;
+    }
+
+    public class REACT_POSITION {
+        public static final int POST = 1;
+        public static final int COMMENT = 2;
+        public static final int CHAT = 3;
+    }
+
     public static final String ADD_FRIEND_REQUEST_MESSAGE = " đã gửi lời mời kết bạn";
 
     public static final String ACCPET_ADD_FRIEND_REQUEST_MESSAGE = " đã chấp nhận lời mời kết bạn";
@@ -54,4 +70,13 @@ public class Constant {
     public static final String CREATE_POST = " đã cập nhật một bài viết mới";
 
     public static final String SHARE_POST = " đã chia sẻ một bài viết mới";
+
+    public static final String LIKE_POST = " đã thích một bài viết của bạn";
+    public static final String LOVE_POST = " đã yêu thích một bài viết của bạn";
+    public static final String CARE_POST = " đã quan tâm một bài viết của bạn";
+    public static final String HAHA_POST = " đã cười một bài viết của bạn";
+    public static final String WOW_POST = " đã wow một bài viết của bạn";
+    public static final String SAD_POST = " đã buồn một bài viết của bạn";
+    public static final String ANGRY_POST = " đã buồn một bài viết của bạn";
+
 }

@@ -24,7 +24,7 @@ public class UserRepositoryImpl extends AbstractRepository<User> implements User
     }
 
     @Override
-    public void save(User entity) {
-        mongoTemplate.save(entity, USER_COLLECTION);
+    public User save(User entity) {
+        return mongoTemplate.save(entity, USER_COLLECTION);
     }
 }

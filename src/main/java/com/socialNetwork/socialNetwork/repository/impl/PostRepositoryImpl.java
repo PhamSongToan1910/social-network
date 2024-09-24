@@ -24,8 +24,8 @@ public class PostRepositoryImpl extends AbstractRepository<Post> implements Post
     }
 
     @Override
-    public void save(Post entity) {
-         mongoTemplate.save(entity, POST_COLLECTION);
+    public Post save(Post entity) {
+         return mongoTemplate.save(entity, POST_COLLECTION);
     }
 
     @Override
