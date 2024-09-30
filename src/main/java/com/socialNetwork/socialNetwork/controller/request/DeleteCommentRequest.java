@@ -7,13 +7,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateReactRequest {
-    private int type;
-
-    private int position;
-
-    private String userId;
-
-    private String postId;
-
+public class DeleteCommentRequest {
+    private String commentId;
 }

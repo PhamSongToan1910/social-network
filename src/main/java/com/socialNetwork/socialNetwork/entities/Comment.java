@@ -6,6 +6,9 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -19,7 +22,7 @@ public class Comment extends BaseEntity{
 
 
     @Field(ID_PARENT)
-    private String idParent;
+    private Set<String> idParent = new HashSet<>();
 
     @Field(USER_ID)
     private String userId;

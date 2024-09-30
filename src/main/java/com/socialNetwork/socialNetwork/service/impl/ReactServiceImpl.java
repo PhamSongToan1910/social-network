@@ -72,7 +72,8 @@ public class ReactServiceImpl implements ReactService {
     @Override
     public void updateReactPost(CreateReactRequest request) {
         React react = reactRepository.findByUserIdAndPostId(request.getUserId(), request.getPostId());
-        if (react != null && !react.getIsReacted().get(request.getType())) {
+        boolean isReacted = react.getIsReacted().get(request.getType()) == null ? false : true;
+        if (react != null && !isReacted) {
             react.getIsReacted().put(request.getType(), true);
             Query query = new Query();
             query.addCriteria(Criteria.where(React._ID).is(react.getId()));
@@ -87,7 +88,7 @@ public class ReactServiceImpl implements ReactService {
 
             User user = userRepository.findById(request.getUserId(), User.class);
 
-            switch (react.getType()) {
+            switch (request.getType()) {
                 case Constant.REACT.LIKE:
                     notificationService.sendMessageToUser(user.getId().toString(), user.getFullName() + " " + Constant.LIKE_POST, post.getUserID());
                     break;
@@ -110,6 +111,16 @@ public class ReactServiceImpl implements ReactService {
                     notificationService.sendMessageToUser(user.getId().toString(), user.getFullName() + " " + Constant.ANGRY_POST, post.getUserID());
                     break;
             }
+        } else if (isReacted) {
+            react.getIsReacted().put(request.getType(), true);
+            Query query = new Query();
+            query.addCriteria(Criteria.where(React._ID).is(react.getId()));
+            Update update = new Update();
+            update.set(React.IS_REACTED, react.getIsReacted())
+                    .set(React.TYPE, request.getType())
+                    .set(react.LAST_MODIFIED_BY, react.getUserId());
+
+            mongoTemplate.updateFirst(query, update, React.class);
         }
     }
 
@@ -126,7 +137,9 @@ public class ReactServiceImpl implements ReactService {
     }
 
     private React castCreateReact(CreateReactRequest request) {
+        System.out.println(request);
         React react = new React();
+        react.setUserId(request.getUserId());
         react.setType(request.getType());
         react.setPosition(request.getPosition());
         react.setPostId(request.getPostId());

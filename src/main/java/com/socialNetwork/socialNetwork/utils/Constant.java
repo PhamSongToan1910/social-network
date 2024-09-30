@@ -70,6 +70,8 @@ public class Constant {
     public static final String CREATE_POST = " đã cập nhật một bài viết mới";
 
     public static final String SHARE_POST = " đã chia sẻ một bài viết mới";
+    public static final String COMMENT_POST = " đã bình luận một bài viết của bạn";
+    public static final String REPPLY_COMMENT_POST = " đã phản hồi một bình luận trong bài viết của ";
 
     public static final String LIKE_POST = " đã thích một bài viết của bạn";
     public static final String LOVE_POST = " đã yêu thích một bài viết của bạn";
