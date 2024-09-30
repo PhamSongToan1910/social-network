@@ -1,17 +1,13 @@
 package com.socialNetwork.socialNetwork.entities;
 
-import com.socialNetwork.socialNetwork.utils.Constant;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-
-import static java.util.Map.entry;
 
 @Data
 @NoArgsConstructor
@@ -38,13 +34,5 @@ public class React extends BaseEntity{
     private String postId;
 
     @Field(IS_REACTED)
-    private Map<Integer, Boolean> isReacted = Map.ofEntries(
-            entry(Constant.REACT.LIKE, false),
-            entry(Constant.REACT.LOVE, false),
-            entry(Constant.REACT.CARE, false),
-            entry(Constant.REACT.WOW, false),
-            entry(Constant.REACT.HAHA, false),
-            entry(Constant.REACT.SAD, false),
-            entry(Constant.REACT.ANGRY, false)
-    );
+    private Map<Integer, Boolean> isReacted = new HashMap<>();
 }

@@ -3,17 +3,18 @@ package com.socialNetwork.socialNetwork.controller.request;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateReactRequest {
-    private int type;
+public class AddCommentRequest {
 
-    private int position;
+    private String idParent;
 
     private String userId;
 
-    private String postId;
+    private String content;
 
+    private String postId;
 }

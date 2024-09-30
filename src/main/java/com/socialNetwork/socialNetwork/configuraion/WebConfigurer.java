@@ -14,11 +14,16 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.Arrays;
 
 @Configuration
 @RequiredArgsConstructor
 @Slf4j
+@EnableWebMvc
 public class WebConfigurer implements ServletContextInitializer, WebMvcConfigurer {
 
     private final Environment env;
@@ -47,6 +52,7 @@ public class WebConfigurer implements ServletContextInitializer, WebMvcConfigure
             source.registerCorsConfiguration("/v3/api-docs", config);
             source.registerCorsConfiguration("/swagger-ui/**", config);
         }
+
         return source;
     }
 
@@ -59,5 +65,11 @@ public class WebConfigurer implements ServletContextInitializer, WebMvcConfigure
                 .mediaType("json", org.springframework.http.MediaType.APPLICATION_JSON)
                 .mediaType("xml", org.springframework.http.MediaType.APPLICATION_XML);
     }
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**").allowedOrigins("http://127.0.0.1:5500");
+    }
+
 
 }

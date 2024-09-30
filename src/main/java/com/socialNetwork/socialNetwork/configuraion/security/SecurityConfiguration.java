@@ -34,7 +34,7 @@ public class SecurityConfiguration {
             .cors(cors -> cors.configurationSource(corsConfigurationSource))
             .sessionManagement(managementConfigure -> managementConfigure.sessionCreationPolicy(STATELESS))
             .authorizeHttpRequests(authorizationRequests -> authorizationRequests
-                .requestMatchers("/api/social-network/auth/login", "/api/social-network/user/register").permitAll()
+                .requestMatchers("/api/social-network/auth/login", "/api/social-network/user/register", "/ws/**").permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
