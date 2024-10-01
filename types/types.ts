@@ -1,4 +1,3 @@
-
 export type Post = {
     id: string;
     username: string;
@@ -6,4 +5,4 @@ export type Post = {
     imageUrl: string;
     caption: string;
   };
-  
+

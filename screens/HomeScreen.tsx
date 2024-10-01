@@ -14,10 +14,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import PostItem from '../components/PostItem';
 import { fakePosts } from '../data/fakeData';
-
-// const navigation: NavigationProp<RootStackParamList> = useNavigation();
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 const HomeScreen = () => {
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+
   return (
     <SafeAreaView style={styles.safeArea}>
       {/* Điều chỉnh StatusBar để tránh header bị che */}
@@ -27,14 +28,11 @@ const HomeScreen = () => {
       <View style={styles.header}>
         <Text style={styles.titleHeader}>Instagram</Text>
         <View style={styles.headerIcons}>
-          <TouchableOpacity style={styles.iconButton}>
-            <AntDesign name="plussquareo" size={28} color="black" />
+          <TouchableOpacity style={styles.iconButton}  >
+            <FontAwesome name="bell-o" size={24} color="black" />
           </TouchableOpacity>
-          <TouchableOpacity onPress={()=> navigation.navigate('Forgot')} >
-            <Image
-              style={styles.profileImage}
-              source={require('../assets/images/login.png')}
-            />
+          <TouchableOpacity style={styles.iconButton}>            
+            <AntDesign name="message1" size={24} color="black" />
           </TouchableOpacity>
         </View>
       </View>
@@ -46,6 +44,7 @@ const HomeScreen = () => {
         renderItem={({ item }) => <PostItem post={item} />}
         // contentContainerStyle={styles.flatListContent} 
       />
+      
     </SafeAreaView>
   );
 };
@@ -56,8 +55,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
   },
   header: {
-    height: 60,
-    backgroundColor: 'yellow',
+    height: 50,
+    // backgroundColor: 'yellow',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',

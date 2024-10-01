@@ -1,4 +1,3 @@
-// LikeButton.tsx
 import React, { useState, useRef } from 'react';
 import {
   View,
@@ -6,131 +5,135 @@ import {
   TouchableOpacity,
   StyleSheet,
   Animated,
-  Easing,
 } from 'react-native';
-import { GestureHandlerRootView, LongPressGestureHandler } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-// Định nghĩa kiểu cho đối tượng phản ứng
 interface Reaction {
   name: string;
   label: string;
   color: string;
+  icon: string;
 }
 
-// Dữ liệu cho các biểu tượng cảm xúc
 const reactions: Reaction[] = [
-  { name: 'thumbs-up', label: 'Like', color: '#4267B2' },
-  { name: 'heart', label: 'Love', color: '#E74C3C' },
-  { name: 'smile-o', label: 'HaHa', color: '#F1C40F' },
-  { name: 'surprise', label: 'Wow', color: '#F39C12' },
-  { name: 'frown-o', label: 'Sad', color: '#3498DB' },
-  { name: 'angry', label: 'Angry', color: '#E74C3C' },
+  { name: 'thumbs-up', label: 'Like', color: '#4267B2', icon: 'thumbs-up' },
+  { name: 'heart', label: 'Love', color: '#E74C3C', icon: 'heart' },
+  { name: 'haha', label: 'Haha', color: '#F1C40F', icon: '😂' },
+  { name: 'wow', label: 'Wow', color: '#F39C12', icon: '😮' },
+  { name: 'sad', label: 'Sad', color: '#3498DB', icon: '😢' },
+  { name: 'angry', label: 'Angry', color: '#E74C3C', icon: '😠' },
 ];
 
 const LikeButton = () => {
   const [showReactions, setShowReactions] = useState(false);
-  const [selectedReaction, setSelectedReaction] = useState<Reaction | null>(null); // Định nghĩa kiểu cho selectedReaction
+  const [selectedReaction, setSelectedReaction] = useState<Reaction | null>(null);
   const scaleAnim = useRef(new Animated.Value(0)).current;
 
-  // Animation khi hiển thị và ẩn thanh cảm xúc
-  const showReactionBar = () => {
+  const handleLongPress = () => {
     setShowReactions(true);
-    Animated.timing(scaleAnim, {
+    Animated.spring(scaleAnim, {
       toValue: 1,
-      duration: 300,
-      easing: Easing.out(Easing.ease),
+      useNativeDriver: true,
+    }).start();
+  }
+
+  const handleSelectReaction = (reaction: Reaction) => {
+    setSelectedReaction(reaction);
+    setShowReactions(false);
+    Animated.timing(scaleAnim, {
+      toValue: 0,
+      duration: 200,
       useNativeDriver: true,
     }).start();
   };
 
-  const hideReactionBar = () => {
-    Animated.timing(scaleAnim, {
-      toValue: 0,
-      duration: 200,
-      easing: Easing.in(Easing.ease),
-      useNativeDriver: true,
-    }).start(() => setShowReactions(false));
+  const handlePress = () => {
+    if (selectedReaction) {
+      setSelectedReaction(null);
+    } else {
+      handleSelectReaction(reactions[0]);
+    }
   };
 
-  const handleSelectReaction = (reaction: Reaction) => {
-    setSelectedReaction(reaction);
-    hideReactionBar();
+  const renderReactionIcon = (reaction: Reaction, size: number) => {
+    if (reaction.name === 'thumbs-up' || reaction.name === 'heart') {
+      return <Icon name={reaction.icon} size={size} color={reaction.color} />;
+    } else {
+      return <Text style={[styles.emojiIcon, { fontSize: size, color: reaction.color }]}>{reaction.icon}</Text>;
+    }
   };
 
   return (
-    <GestureHandlerRootView style={styles.container}>
-      {/* Thanh cảm xúc */}
-      {showReactions && (
-        <Animated.View style={[styles.reactionBar, { transform: [{ scale: scaleAnim }] }]}>
-          {reactions.map((reaction, index) => (
-            <TouchableOpacity
-              key={index}
-              style={styles.reactionItem}
-              onPress={() => handleSelectReaction(reaction)}
-            >
-              <Icon name={reaction.name} size={24} color={reaction.color} />
-            </TouchableOpacity>
-          ))}
-        </Animated.View>
-      )}
-
-      {/* Nút Like */}
-      <LongPressGestureHandler
-        minDurationMs={300}
-        onActivated={showReactionBar}
-        onEnded={hideReactionBar}
+    <View style={styles.container}>
+      <Animated.View style={[
+        styles.reactionBar,
+        {
+          transform: [{ scale: scaleAnim }],
+          opacity: scaleAnim,
+        }
+      ]}>
+        {showReactions && reactions.map((reaction, index) => (
+          <TouchableOpacity
+            key={index}
+            style={styles.reactionItem}
+            onPress={() => handleSelectReaction(reaction)}
+          >
+            {renderReactionIcon(reaction, 20)}
+          </TouchableOpacity>
+        ))}
+      </Animated.View>
+      <TouchableOpacity
+        style={styles.likeButton}
+        onPress={handlePress}
+        onLongPress={handleLongPress}
       >
-        <TouchableOpacity style={styles.actions}>
-          <Icon
-            name={selectedReaction ? selectedReaction.name : 'thumbs-up'}
-            size={24}
-            style={styles.icon}
-            color={selectedReaction ? selectedReaction.color : '#000'}
-          />
-          <Text style={styles.likeText}>{selectedReaction ? selectedReaction.label : 'Like'}</Text>
-        </TouchableOpacity>
-      </LongPressGestureHandler>
-    </GestureHandlerRootView>
+        {selectedReaction ? renderReactionIcon(selectedReaction, 24) : <Icon name="thumbs-up" size={24} color="#000" />}
+        <Text style={[styles.likeText, selectedReaction && { color: selectedReaction.color }]}>
+          {selectedReaction?.label || 'Like'}
+        </Text>
+      </TouchableOpacity>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 20,
-  },
-  actions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f0f0f0',
-    padding: 10,
-    borderRadius: 25,
-  },
-  icon: {
-    marginRight: 5,
-  },
-  likeText: {
-    fontSize: 16,
-    fontWeight: 'bold',
+    position: 'relative',
+    marginVertical: 10,
   },
   reactionBar: {
     position: 'absolute',
-    bottom: 60,
+    bottom: 40,
+    left: 0,
     flexDirection: 'row',
-    backgroundColor: '#fff',
-    borderRadius: 50,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 5,
+    elevation: 5,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 5,
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
   reactionItem: {
-    marginHorizontal: 10,
+    padding: 5,
+    marginHorizontal: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 36,
+    height: 36,
+  },
+  likeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 5,
+  },
+  likeText: {
+    marginLeft: 5,
+  },
+  emojiIcon: {
+    textAlign: 'center',
+    lineHeight: 24,
   },
 });
 

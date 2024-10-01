@@ -1,16 +1,18 @@
-// src/components/PostItem.tsx
 import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { Post } from '../types/types'; // Import kiểu Post nếu bạn đặt trong file riêng
-import LikeButton from '../components/LikeButton';
+import { Post } from '../types/types'; // Đảm bảo bạn đã định nghĩa kiểu Post
+import LikeButton from './LikeButton';
+import ShareButton from './ShareButton';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 
-// Khai báo kiểu cho props của component
 interface PostItemProps {
-  post: Post; // Sử dụng kiểu Post đã khai báo
+  post: Post;
 }
 
 const PostItem: React.FC<PostItemProps> = ({ post }) => {
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+
   return (
     <View style={styles.postContainer}>
       {/* Header */}
@@ -24,32 +26,19 @@ const PostItem: React.FC<PostItemProps> = ({ post }) => {
 
       {/* Actions */}
       <View style={styles.actions}>
-        <View >
+        <LikeButton />
+        <TouchableOpacity style={styles.actionButton} >
+          <Icon name="comment-o" size={24} style={styles.icon} />
+          <Text style={styles.actionText}>Comment</Text>
+        </TouchableOpacity>
         
-        </View>
-        <View >
-            <TouchableOpacity style={styles.actions}>
-                <Icon name="comment-o" size={24} style={styles.icon} />
-                <Text >Comment </Text>
-            </TouchableOpacity>
-            
-        </View>
-        <View >
-            <TouchableOpacity style={styles.actions}>
-                <Icon name="send-o" size={24} style={styles.icon} />
-                <Text >Share </Text>
-            </TouchableOpacity>
-            
-        </View>
-        
-        
-        
+        <ShareButton userAvatar={post.userAvatar} userName={post.username} />
       </View>
 
       {/* Caption */}
       <View style={styles.caption}>
         <Text style={styles.username}>{post.username}</Text>
-        <Text> {post.caption}</Text>
+        <Text style={styles.captionText}>{post.caption}</Text>
       </View>
     </View>
   );
@@ -57,7 +46,10 @@ const PostItem: React.FC<PostItemProps> = ({ post }) => {
 
 const styles = StyleSheet.create({
   postContainer: {
-    marginBottom: 20,
+    backgroundColor: 'white',
+    marginBottom: 10,
+    borderRadius: 10,
+    overflow: 'hidden',
   },
   header: {
     flexDirection: 'row',
@@ -76,19 +68,29 @@ const styles = StyleSheet.create({
   postImage: {
     width: '100%',
     height: 300,
+    resizeMode: 'cover',
   },
   actions: {
-    justifyContent: 'space-between',
     flexDirection: 'row',
+    justifyContent: 'space-around',
     padding: 10,
   },
+  actionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   icon: {
-    marginRight: 15,
+    marginRight: 5,
+  },
+  actionText: {
+    fontSize: 14,
   },
   caption: {
     flexDirection: 'row',
-    paddingHorizontal: 10,
-    paddingBottom: 10,
+    padding: 10,
+  },
+  captionText: {
+    marginLeft: 5,
   },
 });
 
