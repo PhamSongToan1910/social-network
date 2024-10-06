@@ -6,7 +6,7 @@ import axios from 'axios';
 interface ShareButtonProps {
   userAvatar: string;
   userName: string;
-  postId: string; // Thêm postId vào props
+  postId: string; 
 }
 
 const ShareButton: React.FC<ShareButtonProps> = ({ userAvatar, userName, postId }) => {
@@ -15,7 +15,6 @@ const ShareButton: React.FC<ShareButtonProps> = ({ userAvatar, userName, postId 
 
   const handleShare = async () => {
     try {
-      // Gọi API để chia sẻ bài post
       const response = await axios.post('https://66f8c7962a683ce9731022f3.mockapi.io/user', {
         postId: postId,
         content: shareContent

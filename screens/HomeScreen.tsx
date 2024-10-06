@@ -28,7 +28,7 @@ const HomeScreen = () => {
       <View style={styles.header}>
         <Text style={styles.titleHeader}>Instagram</Text>
         <View style={styles.headerIcons}>
-          <TouchableOpacity style={styles.iconButton}  >
+          <TouchableOpacity style={styles.iconButton} onPress={() => navigation.navigate('Notifications')} >
             <FontAwesome name="bell-o" size={24} color="black" />
           </TouchableOpacity>
           <TouchableOpacity style={styles.iconButton}>            

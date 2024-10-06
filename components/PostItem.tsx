@@ -1,24 +1,41 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import { Post } from '../types/types'; // Đảm bảo bạn đã định nghĩa kiểu Post
 import LikeButton from './LikeButton';
 import ShareButton from './ShareButton';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
+import CommentButton from './CommentButton';
 
 interface PostItemProps {
   post: Post;
 }
 
 const PostItem: React.FC<PostItemProps> = ({ post }) => {
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-
+  const getStatusIcon = (status: Number) => {
+    switch (status) {
+      case 1:
+        return <MaterialIcon name="public" size={16} color="#888" />;
+      case 2:
+        return <MaterialIcon name="people" size={16} color="#888" />;
+      case 3:
+        return <MaterialIcon name="lock" size={16} color="#888" />;
+      default:
+        return null;
+    }
+  };
+  
   return (
     <View style={styles.postContainer}>
       {/* Header */}
       <View style={styles.header}>
         <Image source={{ uri: post.userAvatar }} style={styles.avatar} />
-        <Text style={styles.username}>{post.username}</Text>
+        <View style={styles.headerTextContainer}>
+          <Text style={styles.username}>{post.username}</Text>
+          <View style={styles.timeStatusContainer}>
+            <Text style={styles.timeText}>{post.createdAt}</Text>
+            {getStatusIcon(post.status)}
+          </View>
+        </View>
       </View>
 
       {/* Post Image */}
@@ -27,12 +44,12 @@ const PostItem: React.FC<PostItemProps> = ({ post }) => {
       {/* Actions */}
       <View style={styles.actions}>
         <LikeButton />
-        <TouchableOpacity style={styles.actionButton} >
-          <Icon name="comment-o" size={24} style={styles.icon} />
-          <Text style={styles.actionText}>Comment</Text>
-        </TouchableOpacity>
-        
-        <ShareButton userAvatar={post.userAvatar} userName={post.username} />
+        <CommentButton postId={post.id} commentCount={post.commentCount} />
+        <ShareButton
+          userAvatar={post.userAvatar}
+          userName={post.username}
+          postId={post.id} 
+        />
       </View>
 
       {/* Caption */}
@@ -62,8 +79,30 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     marginRight: 10,
   },
+  headerTextContainer: {
+    flex: 1,
+  },
   username: {
     fontWeight: 'bold',
+  },
+  timeStatusContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 2,
+  },
+  timeText: {
+    fontSize: 12,
+    color: '#888',
+    marginRight: 8,
+  },
+  statusContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  statusText: {
+    fontSize: 12,
+    color: '#888',
+    marginLeft: 4,
   },
   postImage: {
     width: '100%',

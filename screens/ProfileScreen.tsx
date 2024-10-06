@@ -35,7 +35,7 @@ const userData = {
 // Giả lập dữ liệu bài đăng
 const postData = Array(15).fill(null).map((_, index) => ({
   id: index.toString(),
-  imageUrl: `https://picsum.photos/500/500?random=${index}`,
+  // imageUrl: `https://picsum.photos/500/500?random=${index}`,
 }));
 
 type ProfileScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Profile'>;

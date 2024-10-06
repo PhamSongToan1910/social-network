@@ -10,13 +10,19 @@ import {
   Platform,
   StatusBar,
   ScrollView,
+  Modal,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
+
+type StatusOption = 'public' | 'friends' | 'private';
 
 const CreatePostScreen = () => {
   const [caption, setCaption] = useState('');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [status, setStatus] = useState<StatusOption>('public');
+  const [showStatusModal, setShowStatusModal] = useState(false);
   const navigation: NavigationProp<RootStackParamList> = useNavigation();
 
   const handleSelectImage = () => {
@@ -27,9 +33,31 @@ const CreatePostScreen = () => {
 
   const handlePost = () => {
     // Implement post creation logic here
-    console.log('Posting:', { caption, image: selectedImage });
+    console.log('Posting:', { caption, image: selectedImage, status });
     // After posting, navigate back to the feed or profile
     navigation.goBack();
+  };
+
+  const getStatusIcon = (statusOption: StatusOption) => {
+    switch (statusOption) {
+      case 'public':
+        return <MaterialIcon name="public" size={24} color="#000" />;
+      case 'friends':
+        return <MaterialIcon name="people" size={24} color="#000" />;
+      case 'private':
+        return <MaterialIcon name="lock" size={24} color="#000" />;
+    }
+  };
+
+  const getStatusText = (statusOption: StatusOption) => {
+    switch (statusOption) {
+      case 'public':
+        return 'Công khai';
+      case 'friends':
+        return 'Bạn bè';
+      case 'private':
+        return 'Chỉ riêng mình tôi';
+    }
   };
 
   return (
@@ -66,16 +94,38 @@ const CreatePostScreen = () => {
         />
 
         <View style={styles.optionsContainer}>
-          <TouchableOpacity style={styles.option}>
-            <Icon name="location-outline" size={24} color="#000" />
-            <Text style={styles.optionText}>Thêm vị trí</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.option}>
-            <Icon name="people-outline" size={24} color="#000" />
-            <Text style={styles.optionText}>Gắn thẻ người khác</Text>
+          <TouchableOpacity style={styles.option} onPress={() => setShowStatusModal(true)}>
+            {getStatusIcon(status)}
+            <Text style={styles.optionText}>{getStatusText(status)}</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
+
+      <Modal
+        visible={showStatusModal}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setShowStatusModal(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Chọn đối tượng</Text>
+            {(['public', 'friends', 'private'] as StatusOption[]).map((option) => (
+              <TouchableOpacity
+                key={option}
+                style={styles.modalOption}
+                onPress={() => {
+                  setStatus(option);
+                  setShowStatusModal(false);
+                }}
+              >
+                {getStatusIcon(option)}
+                <Text style={styles.modalOptionText}>{getStatusText(option)}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -141,6 +191,33 @@ const styles = StyleSheet.create({
   optionText: {
     marginLeft: 10,
     fontSize: 16,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 20,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 15,
+  },
+  modalOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  modalOptionText: {
+    fontSize: 16,
+    marginLeft: 15,
   },
 });
 

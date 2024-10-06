@@ -21,8 +21,7 @@ const LoginScreen = () => {
   
   const handleLogin = async () => {
     try {
-      // Giả sử playerId được tạo hoặc lấy từ một nguồn nào đó
-      const playerId = "0d3e5097-6061-4d72-bf2e-eedac0c710db"; // Trong thực tế, bạn sẽ cần tạo hoặc lấy playerId
+      const playerId = "0d3e5097-6061-4d72-bf2e-eedac0c710db"; 
 
       const response = await axios.post('https://your-api-endpoint.com/login', {
         username,
@@ -31,12 +30,9 @@ const LoginScreen = () => {
       });
       
       if (response.status === 200) {
-        // Xử lý đăng nhập thành công
         console.log('Đăng nhập thành công:', response.data);
-        // Thêm logic để lưu token và chuyển hướng người dùng
         navigation.navigate('MainApp');
       } else {
-        // Xử lý lỗi
         Alert.alert("Lỗi", "Đăng nhập không thành công. Vui lòng kiểm tra lại thông tin.");
       }
     } catch (error) {
@@ -127,35 +123,38 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     backgroundColor: '#fff',
   },
-  rememberForgotContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  rememberMeContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  checkbox: {
-    width: 16,
-    height: 16,
-    borderWidth: 1,
-    borderColor: '#888',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 8, 
-  },
-  checkboxText: {
-    fontSize: 12,
-    color: '#007BFF',
-  },
-  rememberMeText: {
-    fontSize: 16,
-  },
+  // rememberForgotContainer: {
+  //   flexDirection: 'row',
+  //   justifyContent: 'space-between',
+  //   alignItems: 'center',
+  //   marginBottom: 24,
+  // },
+  // rememberMeContainer: {
+  //   flexDirection: 'row',
+  //   alignItems: 'center',
+  // },
+  // checkbox: {
+  //   width: 16,
+  //   height: 16,
+  //   borderWidth: 1,
+  //   borderColor: '#888',
+  //   justifyContent: 'center',
+  //   alignItems: 'center',
+  //   marginRight: 8, 
+  // },
+  // checkboxText: {
+  //   fontSize: 12,
+  //   color: '#007BFF',
+  // },
+  // rememberMeText: {
+  //   fontSize: 16,
+  // },
   forgotPasswordText: {
     color: '#007BFF',
     fontSize: 16,
+    marginBottom: 20,
+    marginTop: -20,
+    marginLeft: 245,
   },
   button: {
     backgroundColor: '#007BFF',
@@ -187,7 +186,7 @@ const styles = StyleSheet.create({
   eyeIcon: {
     position: 'absolute',
     right: 16,
-    top: 12, // Điều chỉnh để căn giữa biểu tượng
+    top: 12, 
   },
 });
 

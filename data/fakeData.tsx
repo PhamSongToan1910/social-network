@@ -6,6 +6,7 @@ export const fakePosts = [
       userAvatar: 'https://via.placeholder.com/150',
       imageUrl: 'https://via.placeholder.com/500',
       caption: 'Đây là mô tả của bài đăng đầu tiên.',
+      status: 1,
     },
     {
       id: '2',
@@ -13,6 +14,7 @@ export const fakePosts = [
       userAvatar: 'https://via.placeholder.com/150',
       imageUrl: 'https://via.placeholder.com/500',
       caption: 'Đây là mô tả của bài đăng thứ hai.',
+
     },
     {
         id: '3',
@@ -20,6 +22,7 @@ export const fakePosts = [
         userAvatar: 'https://via.placeholder.com/150',
         imageUrl: 'https://via.placeholder.com/500',
         caption: 'Đây là mô tả của bài đăng thứ ba.',
+        status: 3,
       },
   ];
   

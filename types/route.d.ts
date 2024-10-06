@@ -9,6 +9,6 @@ type RootStackParamList = {
     Search: undefined;
     CreatePost: undefined;
     MainApp: undefined;
-    
+    Notifications: undefined;
     // Feed: { sort: 'latest' | 'top' } | undefined;
   };

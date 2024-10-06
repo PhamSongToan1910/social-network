@@ -27,9 +27,6 @@ const RegisterScreen = () => {
       Alert.alert('Lỗi', 'Mật khẩu và xác nhận mật khẩu không khớp');
       return;
     }
-    // console.log('Họ tên:', fullName);
-    // console.log('Email:', email);
-    // console.log('Mật khẩu:', password);
     let formData ={
       fullName: fullName,
       email: email,
