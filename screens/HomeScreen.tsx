@@ -1,5 +1,5 @@
 // HomeScreen.tsx
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   Image,
@@ -15,9 +15,25 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import PostItem from '../components/PostItem';
 import { fakePosts } from '../data/fakeData';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import axios from 'axios';
 
 const HomeScreen = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const page = 1;
+        const response = await axios.post('http://localhost:8080/api/social-network/post/get-all-posts', {
+          page
+        });
+        console.log('API response:', response.data);
+      } catch (error) {
+        console.error('Lỗi khi gọi API:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <SafeAreaView style={styles.safeArea}>
