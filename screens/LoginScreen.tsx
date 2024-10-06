@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import * as React from 'react';
+import {useState} from 'react';
 import {
   View,
   Image,
@@ -11,19 +12,24 @@ import {
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
+import { LogLevel, OneSignal } from 'react-native-onesignal';
+import Constants from "expo-constants"
 
 const LoginScreen = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   
+  OneSignal.Debug.setLogLevel(LogLevel.Verbose);
+  OneSignal.initialize(Constants.expoConfig.extra.oneSignalAppId);
+  OneSignal.Notifications.requestPermission(true);
+
   const navigation: NavigationProp<RootStackParamList> = useNavigation();
-  
   const handleLogin = async () => {
     try {
       const playerId = "0d3e5097-6061-4d72-bf2e-eedac0c710db"; 
 
-      const response = await axios.post('https://your-api-endpoint.com/login', {
+      const response = await axios.post('http://192.130.38.112:8080/api/social-network/auth/login', {
         username,
         password,
         playerId
@@ -40,12 +46,11 @@ const LoginScreen = () => {
       Alert.alert("Lỗi", "Có lỗi xảy ra. Vui lòng thử lại sau.");
     }
   };
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Đăng nhập</Text>
       
-      <View style={{ justifyContent: 'center', alignItems: 'center'}} >
+      <View style={{ justifyContent: 'center', alignItems: 'center' }}>
         <Image
           style={{height:200, width:150}}
           source={require("../assets/images/login.png")}

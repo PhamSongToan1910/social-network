@@ -23,7 +23,7 @@ const HomeScreen = () => {
     const fetchData = async () => {
       try {
         const page = 1;
-        const response = await axios.post('http://localhost:8080/api/social-network/post/get-all-posts', {
+        const response = await axios.post('http://192.130.38.112:8080/api/social-network/post/get-all-posts', {
           page
         });
         console.log('API response:', response.data);
