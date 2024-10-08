@@ -19,5 +19,6 @@ public class PostResponse {
 
     private String createDateTime;
 
-    private int typeOfPost;
+    private int isReacted;
+
 }

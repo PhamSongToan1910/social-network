@@ -4,21 +4,18 @@ import com.socialNetwork.socialNetwork.utils.ModelMapperUtils;
 import jakarta.servlet.ServletContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
-import java.util.Arrays;
 
 @Configuration
 @RequiredArgsConstructor
@@ -31,6 +28,11 @@ public class WebConfigurer implements ServletContextInitializer, WebMvcConfigure
     @Bean
     public ModelMapperUtils modelMapperUtils() {
         return new ModelMapperUtils();
+    }
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
     }
 
     @Override
@@ -66,10 +68,10 @@ public class WebConfigurer implements ServletContextInitializer, WebMvcConfigure
                 .mediaType("xml", org.springframework.http.MediaType.APPLICATION_XML);
     }
 
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**").allowedOrigins("http://127.0.0.1:5500");
-    }
+//    @Override
+//    public void addCorsMappings(CorsRegistry registry) {
+//        registry.addMapping("/**").allowedOrigins("exp://192.168.80.83:8081");
+//    }
 
 
 }

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.socialNetwork.socialNetwork.controller.request.AcceptFollowRequest;
 import com.socialNetwork.socialNetwork.controller.request.CreatePostRequest;
+import com.socialNetwork.socialNetwork.controller.request.GetAllPostRequest;
+import com.socialNetwork.socialNetwork.controller.response.PostResponse;
 import com.socialNetwork.socialNetwork.controller.response.ResponseData;
 import com.socialNetwork.socialNetwork.service.PostService;
 import lombok.AccessLevel;
@@ -12,6 +14,8 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RequestMapping("/api/social-network/post")
 @RequiredArgsConstructor
@@ -38,5 +42,10 @@ public class PostController {
         createPostRequest.setImage(file);
         postService.createPost(createPostRequest);
         return new ResponseData<>(200, "Success");
+    }
+
+    @GetMapping("/get-all-posts")
+    public ResponseData<List<PostResponse>> getAllPosts(@RequestBody GetAllPostRequest getAllPostRequest) {
+        return new ResponseData<>(postService.getAllPosts(getAllPostRequest.getPage()));
     }
 }

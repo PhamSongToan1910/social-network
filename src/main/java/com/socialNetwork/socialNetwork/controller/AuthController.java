@@ -45,7 +45,7 @@ public class AuthController {
         userService.updatePlayerId(loginVM.getUsername(), loginVM.getPlayerId());
 
         return new ResponseData<>(new JWTToken(jwt));
-    }
+    }   
 
     @PostMapping("/logout")
     public ResponseData<String> logout() {

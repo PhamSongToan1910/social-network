@@ -6,7 +6,7 @@ spring:
       uri: mongodb+srv://toantoanpham1910:Songtoan1910@social-network.awto8.mongodb.net/social-network
 
 server:
-  port: 8081
+  port: 8080
 
 security:
   jwt:
