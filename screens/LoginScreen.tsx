@@ -12,30 +12,35 @@ import {
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
-import { LogLevel, OneSignal } from 'react-native-onesignal';
-import Constants from "expo-constants"
+import AsyncStorage from '@react-native-async-storage/async-storage';
+// import { LogLevel, OneSignal } from 'react-native-onesignal';
+// import Constants from "expo-constants"
 
 const LoginScreen = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   
-  OneSignal.Debug.setLogLevel(LogLevel.Verbose);
-  OneSignal.initialize(Constants.expoConfig.extra.oneSignalAppId);
-  OneSignal.Notifications.requestPermission(true);
+  // OneSignal.Debug.setLogLevel(LogLevel.Verbose);
+  // OneSignal.initialize(Constants.expoConfig.extra.oneSignalAppId);
+  // OneSignal.Notifications.requestPermission(true);
 
   const navigation: NavigationProp<RootStackParamList> = useNavigation();
   const handleLogin = async () => {
     try {
       const playerId = "0d3e5097-6061-4d72-bf2e-eedac0c710db"; 
 
-      const response = await axios.post('http://192.130.38.112:8080/api/social-network/auth/login', {
+      const response = await axios.post('http://192.130.38.116:8080/api/social-network/auth/login', {
         username,
         password,
         playerId
       });
       
-      if (response.status === 200) {
+      console.log('Response data:', response.data.data.accessToken); 
+
+      if (response.data.statusCode === 200) {
+        const token =response.data.data.accessToken;
+        await AsyncStorage.setItem('@userToken', token);
         console.log('Đăng nhập thành công:', response.data);
         navigation.navigate('MainApp');
       } else {

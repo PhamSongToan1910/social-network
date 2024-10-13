@@ -1,5 +1,5 @@
 // HomeScreen.tsx
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Image,
@@ -16,17 +16,43 @@ import PostItem from '../components/PostItem';
 import { fakePosts } from '../data/fakeData';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+interface Post {
+  id: String,
+  userID: String,
+  content: String,
+  image: String,
+  status: Number,
+  createAt: String,
+  typeOfPost: Number,
+  countOfReacts: Number,
+  countOfComments: Number,
+  countOfShares: Number,
+  reaction: Number
+}
 
 const HomeScreen = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const [posts, setPosts] = useState<Post[]>([]);
   useEffect(() => {
     const fetchData = async () => {
       try {
         const page = 1;
-        const response = await axios.post('http://192.130.38.112:8080/api/social-network/post/get-all-posts', {
-          page
-        });
-        console.log('API response:', response.data);
+        const token = await AsyncStorage.getItem('@userToken');
+        console.log(token);  
+        const response = await axios.get(
+          `http://192.130.38.116:8080/api/social-network/post/get-all-posts?page=${page}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+        
+        console.log('Phản hồi API:', response.data);
+        setPosts(response.data.data);
       } catch (error) {
         console.error('Lỗi khi gọi API:', error);
       }
@@ -55,7 +81,7 @@ const HomeScreen = () => {
 
       {/* Nội dung cuộn */}
       <FlatList
-        data={fakePosts}
+        data={posts}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => <PostItem post={item} />}
         // contentContainerStyle={styles.flatListContent} 

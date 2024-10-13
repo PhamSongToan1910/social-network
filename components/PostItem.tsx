@@ -5,6 +5,7 @@ import { Post } from '../types/types'; // Đảm bảo bạn đã định nghĩa
 import LikeButton from './LikeButton';
 import ShareButton from './ShareButton';
 import CommentButton from './CommentButton';
+import WebView from 'react-native-webview';
 
 interface PostItemProps {
   post: Post;
@@ -28,9 +29,9 @@ const PostItem: React.FC<PostItemProps> = ({ post }) => {
     <View style={styles.postContainer}>
       {/* Header */}
       <View style={styles.header}>
-        <Image source={{ uri: post.userAvatar }} style={styles.avatar} />
+        <Image source={{ uri: post.image }} style={styles.avatar} />
         <View style={styles.headerTextContainer}>
-          <Text style={styles.username}>{post.username}</Text>
+          <Text style={styles.userID}>{post.userID}</Text>
           <View style={styles.timeStatusContainer}>
             <Text style={styles.timeText}>{post.createdAt}</Text>
             {getStatusIcon(post.status)}
@@ -39,7 +40,7 @@ const PostItem: React.FC<PostItemProps> = ({ post }) => {
       </View>
 
       {/* Post Image */}
-      <Image source={{ uri: post.imageUrl }} style={styles.postImage} />
+      <Image source={{ uri: post.image }} style={styles.postImage} />
 
       {/* Actions */}
       <View style={styles.actions}>
