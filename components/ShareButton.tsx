@@ -1,34 +1,33 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Modal, StyleSheet, TextInput, Image, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 
 interface ShareButtonProps {
   userAvatar: string;
   userName: string;
-  postId: string; 
+  postID: string; 
 }
 
-const ShareButton: React.FC<ShareButtonProps> = ({ userAvatar, userName, postId }) => {
+const ShareButton: React.FC<ShareButtonProps> = ({ userAvatar, userName, postID }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [shareContent, setShareContent] = useState('');
 
-  const handleShare = async () => {
-    try {
-      const response = await axios.post('https://66f8c7962a683ce9731022f3.mockapi.io/user', {
-        postId: postId,
-        content: shareContent
-      });
+  const navigation: NavigationProp<RootStackParamList> = useNavigation();
 
-      if (response.status === 200) {
-        setModalVisible(false);
-        setShareContent('');
-      } else {
-        Alert.alert('Lỗi', 'Không thể chia sẻ bài viết. Vui lòng thử lại sau.');
-      }
+  const handleShare = async () => {
+
+    const postData = {
+      
+      typeOfPost: 2,
+    };
+    try {
+      const response = await axios.post('https://your-api-endpoint.com/posts',postData );
+      console.log('Post created successfully:', response.data);
+      navigation.navigate('Home')
     } catch (error) {
-      console.error('Lỗi khi chia sẻ bài viết:', error);
-      Alert.alert('Lỗi', 'Đã xảy ra lỗi khi chia sẻ bài viết. Vui lòng thử lại sau.');
+      console.error('Lỗi khi gọi API đăng nhập:', error);
     }
   };
 

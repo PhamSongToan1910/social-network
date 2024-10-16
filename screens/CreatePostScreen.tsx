@@ -15,47 +15,76 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { launchImageLibrary } from 'react-native-image-picker';
+import { PermissionsAndroid } from 'react-native';
+import axios from 'axios';
 
-type StatusOption = 'public' | 'friends' | 'private';
+type StatusOption = 1 | 2 | 3;
 
 const CreatePostScreen = () => {
   const [caption, setCaption] = useState('');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [status, setStatus] = useState<StatusOption>('public');
+  const [status, setStatus] = useState<StatusOption>(1);
   const [showStatusModal, setShowStatusModal] = useState(false);
   const navigation: NavigationProp<RootStackParamList> = useNavigation();
 
+
   const handleSelectImage = () => {
-    // Implement image selection logic here
-    // For now, we'll just set a dummy image
-    setSelectedImage('https://via.placeholder.com/300');
+    const requestCameraPermission = async () => {
+      try {
+        const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.CAMERA);
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          console.log("Camera permission given");
+          const result:any = await launchImageLibrary({mediaType:'photo',})
+          setSelectedImage(result.assets[0].uri);
+        } else {
+          console.log("Camera permission denied");
+        }
+      } catch (err) {
+        console.warn(err);
+      }
+    };
   };
 
-  const handlePost = () => {
-    // Implement post creation logic here
-    console.log('Posting:', { caption, image: selectedImage, status });
-    // After posting, navigate back to the feed or profile
-    navigation.goBack();
+  const handlePost = async () => {
+    const userID = '12345';
+  
+    const postData = {
+      userID,
+      caption,
+      image: selectedImage,
+      status,
+      typeOfPost: 1,
+    };
+  
+    try {
+      const response = await axios.post('https://your-api-endpoint.com/posts', postData);
+      console.log('Post created successfully:', response.data);
+      navigation.navigate('Home')
+    } catch (error) {
+      console.error('Lỗi khi gọi API đăng nhập:', error);
+    }
   };
+  
 
   const getStatusIcon = (statusOption: StatusOption) => {
     switch (statusOption) {
-      case 'public':
+      case 1:
         return <MaterialIcon name="public" size={24} color="#000" />;
-      case 'friends':
+      case 2:
         return <MaterialIcon name="people" size={24} color="#000" />;
-      case 'private':
+      case 3:
         return <MaterialIcon name="lock" size={24} color="#000" />;
     }
   };
 
   const getStatusText = (statusOption: StatusOption) => {
     switch (statusOption) {
-      case 'public':
+      case 1:
         return 'Công khai';
-      case 'friends':
+      case 2:
         return 'Bạn bè';
-      case 'private':
+      case 3:
         return 'Chỉ riêng mình tôi';
     }
   };
@@ -110,7 +139,7 @@ const CreatePostScreen = () => {
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Chọn đối tượng</Text>
-            {(['public', 'friends', 'private'] as StatusOption[]).map((option) => (
+            {([1, 2, 3] as StatusOption[]).map((option) => (
               <TouchableOpacity
                 key={option}
                 style={styles.modalOption}

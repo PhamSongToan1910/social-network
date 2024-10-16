@@ -1,53 +1,114 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Modal, TextInput, FlatList } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import LikeButton from './LikeButton';
+import { Post } from '../types/types';
+import { Client } from '@stomp/stompjs'; // Import STOMP client
+import Stomp from "stompjs";
+import SockJS from "sockjs-client";
 
 interface Comment {
   id: string;
   username: string;
   text: string;
   likes: number;
-  createdAt: string; // Thêm trường này
+  createdAt: string;
+  postID: Post['postID'];
 }
 
 interface CommentButtonProps {
-  postId: string;
+  postID: Post['postID'];
   commentCount: number;
 }
 
-const CommentButton: React.FC<CommentButtonProps> = ({ postId, commentCount }) => {
+const CommentButton: React.FC<CommentButtonProps> = ({ postID, commentCount }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [newComment, setNewComment] = useState('');
   const [comments, setComments] = useState<Comment[]>([]);
+  const [client, setClient] = useState<Client | null>(null); // STOMP client
 
-  const handleOpenComments = () => {
-    // Tại đây, bạn có thể gọi API để lấy danh sách comments
-    // Ví dụ:
-    // fetchComments(postId).then(setComments);
-    setModalVisible(true);
-  };
+  useEffect(() => {
+    // Initialize the STOMP client with SockJS
+    const socket = new SockJS('http://YOUR_SERVER_URL/ws'); // Replace with your WebSocket URL
+    const stompClient = new Client({
+      webSocketFactory: () => socket, // Use SockJS for WebSocket connection
+      reconnectDelay: 5000, // Auto reconnect after disconnect
+      onConnect: () => {
+        console.log('Connected to WebSocket via STOMP');
+        
+        // Subscribe to the comments topic for the specific post
+        stompClient.subscribe(`/topic/comments/${postID}`, (message) => {
+          const comment = JSON.parse(message.body);
+          if (comment.postID === postID) {
+            setComments((prevComments) => [...prevComments, comment]);
+          }
+        });
+      },
+      onWebSocketError: (error) => {
+        console.error('WebSocket error:', error);
+      },
+    });
+  
+    stompClient.activate(); // Activate STOMP client
+    setClient(stompClient);
+  
+    return () => {
+      stompClient.deactivate(); // Deactivate STOMP when component unmounts
+    };
+  }, [postID]);
+  
 
-  const handleAddComment = () => {
-    if (newComment.trim()) {
-      const comment: Comment = {
-        id: Date.now().toString(),
-        username: 'CurrentUser', // Thay thế bằng username thực tế
-        text: newComment,
-        likes: 0,
-        createdAt: new Date().toISOString(), // Thêm thời gian tạo comment
-      };
-      setComments([...comments, comment]);
-      setNewComment('');
-      // Tại đây, bạn có thể gọi API để lưu comment
-      // Ví dụ:
-      // saveComment(postId, comment);
+  const handleOpenComments = async () => {
+    try {
+      const response = await fetch(`https://66f8c7962a683ce9731022f3.mockapi.io/user/${postID}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch post data');
+      }
+      const postData = await response.json();
+      console.log('Post data:', postData);
+
+      await fetchComments(postID);
+      setModalVisible(true);
+    } catch (error) {
+      console.error('Error fetching post data:', error);
     }
   };
 
+  const fetchComments = async (postID: string) => {
+    try {
+      const response = await fetch(`https://66f8c7962a683ce9731022f3.mockapi.io/user/?postID=${postID}`);
+      const data = await response.json();
+      setComments(data);
+    } catch (error) {
+      console.error('Error fetching comments:', error);
+    }
+  };
+
+  const handleAddComment = () => {
+    if (newComment.trim() && client && client.connected) {
+      const comment: Comment = {
+        id: Date.now().toString(),
+        username: 'CurrentUser', 
+        text: newComment,
+        likes: 0,
+        createdAt: new Date().toISOString(),
+        postID: postID,
+      };
+  
+      client.publish({
+        destination: `/app/comments/${postID}`, // Destination to send the message
+        body: JSON.stringify(comment),          // Message body (stringified comment)
+      });
+      
+  
+      setNewComment(''); // Clear the comment input
+    }
+  };
+  
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return `${date.getDate()}/${date.getMonth() + 1}`; // Ngày/Tháng
+    return `${date.getDate()}/${date.getMonth() + 1}`;
   };
 
   const renderComment = ({ item }: { item: Comment }) => (
@@ -70,6 +131,11 @@ const CommentButton: React.FC<CommentButtonProps> = ({ postId, commentCount }) =
 
   return (
     <View>
+      {/* Display comment count */}
+      <View style={styles.commentCountContainer}>
+        <Text style={styles.commentCountText}>{commentCount} Bình luận</Text>
+      </View>
+
       <TouchableOpacity style={styles.button} onPress={handleOpenComments}>
         <Icon name="comment-o" size={24} color="#333" />
         <Text style={styles.buttonText}>Comment {commentCount}</Text>
@@ -114,10 +180,18 @@ const CommentButton: React.FC<CommentButtonProps> = ({ postId, commentCount }) =
 };
 
 const styles = StyleSheet.create({
+  commentCountContainer: {
+    marginTop: 10,
+    alignItems: 'center',
+  },
+  commentCountText: {
+    fontSize: 12,
+    color: '#666',
+  },
   button: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 15,
+    marginTop: 5,
   },
   buttonText: {
     marginLeft: 8,
@@ -161,7 +235,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    // marginTop: 5,
   },
   likeReplyContainer: {
     flexDirection: 'row',
