@@ -29,9 +29,9 @@ const PostItem: React.FC<PostItemProps> = ({ post }) => {
     <View style={styles.postContainer}>
       {/* Header */}
       <View style={styles.header}>
-        <Image source={{ uri: post.image }} style={styles.avatar} />
+        <Image source={{ uri: post.avt === null ? "https://drive.google.com/uc?export=view&id=12yVgnwPYTa_Kk2py03xAGma8VUVS8_UC" : post.avt }} style={styles.avatar} />
         <View style={styles.headerTextContainer}>
-          <Text style={styles.userID}>{post.userID}</Text>
+          <Text style={styles.userID}>{post.userFullName}</Text>
           <View style={styles.timeStatusContainer}>
             <Text style={styles.timeText}>{post.createdAt}</Text>
             {getStatusIcon(post.status)}
