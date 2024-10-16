@@ -45,11 +45,11 @@ const PostItem: React.FC<PostItemProps> = ({ post }) => {
       {/* Actions */}
       <View style={styles.actions}>
         <LikeButton />
-        <CommentButton postId={post.id} commentCount={post.commentCount} />
+        <CommentButton postID={post.postID} commentCount={post.commentCount} />
         <ShareButton
           userAvatar={post.userAvatar}
           userName={post.username}
-          postId={post.id} 
+          postID={post.postID} 
         />
       </View>
 
