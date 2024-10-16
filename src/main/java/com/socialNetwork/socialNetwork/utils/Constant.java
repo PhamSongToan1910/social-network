@@ -43,7 +43,8 @@ public class Constant {
         public static final String ROLE_COLLECTION = "authorities";
         public static final String RESOURCE_COLLECTION = "resource";
         public static final String POST_COLLECTION = "post";
-
+        public static final String REACT_COLLECTION = "react";
+        public static final String COMMENT_COLLECTION = "comment";
 
     }
 

@@ -13,6 +13,7 @@ import com.socialNetwork.socialNetwork.utils.Constant;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -41,7 +42,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public void addSubComment(AddCommentRequest addCommentRequest) {
         Comment commentParent = commentRepository.findById(addCommentRequest.getIdParent(), Comment.class);
-        Set<String> idCommentParent = commentParent.getIdParent();
+        List<String> idCommentParent = commentParent.getIdParent();
         idCommentParent.add(addCommentRequest.getIdParent());
         Comment comment = new Comment();
         comment.setContent(addCommentRequest.getContent());

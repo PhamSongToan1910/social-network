@@ -54,7 +54,7 @@ public class User  extends BaseEntity{
     private String address;
 
     @Field(AVT)
-    private Byte[] avt;
+    private String avt;
 
     @Field(DAYOFBIRTH)
     private String DOB;

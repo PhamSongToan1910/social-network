@@ -3,7 +3,7 @@ package com.socialNetwork.socialNetwork.controller.request;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.bson.types.ObjectId;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @NoArgsConstructor
@@ -24,7 +24,7 @@ public class UserRequest {
 
     private String address;
 
-    private Byte[] avt;
+    private MultipartFile image;
 
     private String DOB;
 

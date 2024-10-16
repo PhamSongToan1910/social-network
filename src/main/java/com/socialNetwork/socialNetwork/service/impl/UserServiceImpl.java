@@ -13,6 +13,7 @@ import com.socialNetwork.socialNetwork.service.UserService;
 import com.socialNetwork.socialNetwork.utils.Constant;
 import com.socialNetwork.socialNetwork.utils.ModelMapperUtils;
 import com.socialNetwork.socialNetwork.utils.Utils;
+import com.socialNetwork.socialNetwork.utils.googleDriver.DriveUploader;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -24,6 +25,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -41,13 +43,14 @@ public class UserServiceImpl implements UserService {
     RoleRepository roleRepository;
 
     @Override
-    public String createUser(UserRequest userRequest) {
+    public String createUser(UserRequest userRequest) throws IOException {
         System.out.println("userRequest: " + userRequest);
         User user = ModelMapperUtils.toObject(userRequest, User.class);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         Query query = new Query(Criteria.where(Role.NAME).is("user"));
         Role role = roleRepository.findOne(query, Role.class);
         user.getAuthorities().add(role.getId().toString());
+        user.setAvt(DriveUploader.uploadFile(userRequest.getImage()));
         return userRepository.insert(user);
     }
 

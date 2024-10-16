@@ -21,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class PostController {
 
     PostService postService;
@@ -45,7 +46,7 @@ public class PostController {
     }
 
     @GetMapping("/get-all-posts")
-    public ResponseData<List<PostResponse>> getAllPosts(@RequestBody GetAllPostRequest getAllPostRequest) {
-        return new ResponseData<>(postService.getAllPosts(getAllPostRequest.getPage()));
+    public ResponseData<List<PostResponse>> getAllPosts(@RequestParam int page) {
+        return new ResponseData<>(postService.getAllPosts(page));
     }
 }

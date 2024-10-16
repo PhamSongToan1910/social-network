@@ -14,6 +14,8 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 @RestController
 @RequestMapping("/api/social-network/user")
 @RequiredArgsConstructor
@@ -24,7 +26,7 @@ public class UserController {
     FollowService followService;
 
     @PostMapping("/register")
-    public ResponseData<String> register(@RequestBody UserRequest userRequest) {
+    public ResponseData<String> register(@RequestBody UserRequest userRequest) throws IOException {
         String userId = userService.createUser(userRequest);
         return new ResponseData<>(200, userId);
     }

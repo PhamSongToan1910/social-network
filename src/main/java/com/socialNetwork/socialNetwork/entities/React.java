@@ -1,5 +1,6 @@
 package com.socialNetwork.socialNetwork.entities;
 
+import com.socialNetwork.socialNetwork.utils.Constant;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,7 +13,7 @@ import java.util.Map;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Document("react")
+@Document(Constant.COLLECTION.REACT_COLLECTION)
 public class React extends BaseEntity{
 
     public static final String TYPE = "type";

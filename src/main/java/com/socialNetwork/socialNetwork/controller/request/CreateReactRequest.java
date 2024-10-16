@@ -16,4 +16,6 @@ public class CreateReactRequest {
 
     private String postId;
 
+    private int reaction;
+
 }

@@ -6,13 +6,12 @@ import com.socialNetwork.socialNetwork.controller.response.PostResponse;
 import com.socialNetwork.socialNetwork.entities.Follow;
 import com.socialNetwork.socialNetwork.entities.Post;
 import com.socialNetwork.socialNetwork.entities.User;
-import com.socialNetwork.socialNetwork.repository.interfacePackage.FollowRepository;
-import com.socialNetwork.socialNetwork.repository.interfacePackage.PostRepository;
-import com.socialNetwork.socialNetwork.repository.interfacePackage.UserRepository;
+import com.socialNetwork.socialNetwork.repository.interfacePackage.*;
 import com.socialNetwork.socialNetwork.service.FollowService;
 import com.socialNetwork.socialNetwork.service.NotificationService;
 import com.socialNetwork.socialNetwork.service.PostService;
 import com.socialNetwork.socialNetwork.utils.Constant;
+import com.socialNetwork.socialNetwork.utils.googleDriver.DriveUploader;
 import com.socialNetwork.socialNetwork.utils.ModelMapperUtils;
 import com.socialNetwork.socialNetwork.utils.Utils;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +26,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +39,8 @@ public class PostServiceImpl implements PostService {
     private final NotificationService notificationService;
     private final UserRepository userRepository;
     private final FollowRepository followRepository;
+    private final ReactRepository reactRepository;
+    private final CommentRepository commentRepository;
 
     public static final Map<String, Post> MAP_ALL_POSTS = new ConcurrentHashMap<>();
 
@@ -61,22 +63,39 @@ public class PostServiceImpl implements PostService {
     public List<PostResponse> getAllPosts(int page) {
         int limit = Constant.PAGE_SIZE;
         int skip = (page - 1) * limit;
-        List<PostResponse> postResponseList = new ArrayList<>();
 
         List<Post> posts = new ArrayList<>(MAP_ALL_POSTS.values());
 
-        if (skip < posts.size()) {
-            posts = posts.stream()
-                    .skip(skip)
-                    .limit(limit).toList();
-
-            for (Post post : posts) {
-                postResponseList.add(ModelMapperUtils.toObject(post, PostResponse.class));
-            }
+        if (skip >= posts.size()) {
+            return Collections.emptyList();
         }
 
-        return postResponseList;
+        List<Post> paginatedPosts = posts.stream()
+                .skip(skip)
+                .limit(limit)
+                .toList();
+
+        List<String> postIds = paginatedPosts.stream()
+                .map(post -> post.getId().toString())
+                .toList();
+
+        Map<String, Integer> reactCounts = reactRepository.getReactCounts(postIds);
+        Map<String, Integer> commentCounts = commentRepository.getNumberComments(postIds);
+
+        return paginatedPosts.stream()
+                .map(post -> {
+                    User user = userRepository.findById(post.getUserID(), User.class);
+                    PostResponse postResponse = ModelMapperUtils.toObject(post, PostResponse.class);
+                    postResponse.setUserFullName(user.getFullName());
+                    postResponse.setAvt(user.getAvt());
+                    postResponse.setCreatedAt(postResponse.getCreatedAt().split("T")[0]);
+                    postResponse.setCountOfReacts(reactCounts.getOrDefault(post.getId().toString(), 0));
+                    postResponse.setCountOfComments(commentCounts.getOrDefault(post.getId().toString(), 0));
+                    return postResponse;
+                })
+                .collect(Collectors.toList());
     }
+
 
     @Override
     public List<PostResponse> getMyOwnPosts(int page) {
@@ -92,9 +111,18 @@ public class PostServiceImpl implements PostService {
                     .skip(skip)
                     .limit(limit).toList();
 
-            for (Post post : posts) {
-                postResponseList.add(ModelMapperUtils.toObject(post, PostResponse.class));
-            }
+            List<String> postIds = posts.stream().map(post -> post.getId().toString()).toList();
+            Map<String, Integer> reactCounts = reactRepository.getReactCounts(postIds);
+            Map<String, Integer> commentCounts = commentRepository.getNumberComments(postIds);
+
+            return posts.stream()
+                    .map(post -> {
+                        PostResponse postResponse = ModelMapperUtils.toObject(post, PostResponse.class);
+                        postResponse.setCountOfReacts(reactCounts.getOrDefault(post.getId().toString(), 0));
+                        postResponse.setCountOfComments(commentCounts.getOrDefault(post.getId().toString(), 0));
+                        return postResponse;
+                    })
+                    .collect(Collectors.toList());
         }
 
         return postResponseList;
@@ -105,31 +133,33 @@ public class PostServiceImpl implements PostService {
         User user = Utils.getCurrentUser();
         int limit = Constant.PAGE_SIZE;
         int skip = (page - 1) * limit;
-        List<PostResponse> postResponseList = new ArrayList<>();
 
-        List<Post> posts = new ArrayList<>(MAP_ALL_POSTS.values());
+        List<Post> allPosts = new ArrayList<>(MAP_ALL_POSTS.values());
+        List<String> postIds = allPosts.stream().map(post -> post.getId().toString()).toList();
+        Map<String, Integer> reactCounts = reactRepository.getReactCounts(postIds);
+        Map<String, Integer> commentCounts = commentRepository.getNumberComments(postIds);
 
-        if (followRepository.getFollowerByUserId(userId).contains(user.getId().toString())) {
-            if (skip < posts.size()) {
-                posts = posts.stream().filter(post -> post.getUserID().equals(user.getId().toString()) && post.getStatus() >= Constant.POST.FRIEND_STATUS)
-                        .skip(skip)
-                        .limit(limit).toList();
-
-                for (Post post : posts) {
-                    postResponseList.add(ModelMapperUtils.toObject(post, PostResponse.class));
-                }
-            } else {
-                posts = posts.stream().filter(post -> post.getUserID().equals(user.getId().toString()) && post.getStatus() == Constant.POST.PUBLIC_STATUS)
-                        .skip(skip)
-                        .limit(limit).toList();
-
-                for (Post post : posts) {
-                    postResponseList.add(ModelMapperUtils.toObject(post, PostResponse.class));
-                }
-            }
+        if (skip >= allPosts.size()) {
+            return Collections.emptyList();
         }
 
-        return postResponseList;
+        int postStatus = followRepository.getFollowerByUserId(userId).contains(user.getId().toString())
+                ? Constant.POST.FRIEND_STATUS : Constant.POST.PUBLIC_STATUS;
+
+        List<Post> filteredPosts = allPosts.stream()
+                .filter(post -> post.getUserID().equals(user.getId().toString()) && post.getStatus() >= postStatus)
+                .skip(skip)
+                .limit(limit)
+                .toList();
+
+        return filteredPosts.stream()
+                .map(post -> {
+                    PostResponse postResponse = ModelMapperUtils.toObject(post, PostResponse.class);
+                    postResponse.setCountOfReacts(reactCounts.getOrDefault(post.getId().toString(), 0));
+                    postResponse.setCountOfComments(commentCounts.getOrDefault(post.getId().toString(), 0));
+                    return postResponse;
+                })
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -180,7 +210,7 @@ public class PostServiceImpl implements PostService {
     private Post castCreatePostRequestToPost(CreatePostRequest postRequest) {
         try {
             Post post = new Post();
-            post.setImage(Arrays.toString(postRequest.getImage().getBytes()));
+            post.setImage(DriveUploader.uploadFile(postRequest.getImage()));
             post.setContent(postRequest.getContent());
             post.setUserID(postRequest.getUserID());
             post.setStatus(postRequest.getStatus());
@@ -219,7 +249,7 @@ public class PostServiceImpl implements PostService {
         List<String> listStringFriendIds = listFriendIds.stream().map(follow -> follow.getUserId()).toList();
         List<Post> postOfFriends = postRepository.getAllPostOfFriends(listStringFriendIds);
         postOfFriends.forEach(post -> {
-            MAP_ALL_POSTS.put(post.getUserID(), post);
+            MAP_ALL_POSTS.put(post.getId().toString(), post);
         });
     }
 }
