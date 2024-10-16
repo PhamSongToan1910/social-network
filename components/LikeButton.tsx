@@ -27,6 +27,7 @@ const reactions: Reaction[] = [
 const LikeButton = () => {
   const [showReactions, setShowReactions] = useState(false);
   const [selectedReaction, setSelectedReaction] = useState<Reaction | null>(null);
+  const [likeCount, setLikeCount] = useState(7);
   const scaleAnim = useRef(new Animated.Value(0)).current;
 
   const handleLongPress = () => {
@@ -35,10 +36,11 @@ const LikeButton = () => {
       toValue: 1,
       useNativeDriver: true,
     }).start();
-  }
+  };
 
   const handleSelectReaction = (reaction: Reaction) => {
     setSelectedReaction(reaction);
+    setLikeCount(likeCount + 1);
     setShowReactions(false);
     Animated.timing(scaleAnim, {
       toValue: 0,
@@ -50,6 +52,7 @@ const LikeButton = () => {
   const handlePress = () => {
     if (selectedReaction) {
       setSelectedReaction(null);
+      setLikeCount(likeCount > 0 ? likeCount - 1 : 0);
     } else {
       handleSelectReaction(reactions[0]);
     }
@@ -65,6 +68,15 @@ const LikeButton = () => {
 
   return (
     <View style={styles.container}>
+      {/* Display like count conditionally */}
+      {likeCount > 0 ? (
+        <View style={styles.likeCountContainer}>
+          <Text style={styles.likeCountText}>{likeCount} lượt tương tác</Text>
+        </View>
+      ) : (
+        <Text style={styles.likeCountText}></Text>
+      )}
+
       <Animated.View style={[
         styles.reactionBar,
         {
@@ -82,6 +94,7 @@ const LikeButton = () => {
           </TouchableOpacity>
         ))}
       </Animated.View>
+      
       <TouchableOpacity
         style={styles.likeButton}
         onPress={handlePress}
@@ -100,6 +113,14 @@ const styles = StyleSheet.create({
   container: {
     position: 'relative',
     marginVertical: 10,
+  },
+  likeCountContainer: {
+    left: '-10%',
+    alignItems: 'center',
+  },
+  likeCountText: {
+    color: 'black',
+    fontSize: 12,
   },
   reactionBar: {
     position: 'absolute',
